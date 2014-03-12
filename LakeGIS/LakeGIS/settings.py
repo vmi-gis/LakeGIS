@@ -8,6 +8,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
+import sys
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -57,13 +58,22 @@ WSGI_APPLICATION = 'LakeGIS.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-	'NAME': 'lakegis',
-	'USER': 'lakegis'
+if 'test' in sys.argv:
+    DATABASES = {
+        'default': {
+	    'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            'NAME': 'lakegis',
+            'USER': 'postgres'
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+	    'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            'NAME': 'lakegis',
+            'USER': 'lakegis'
+        }
+    }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
