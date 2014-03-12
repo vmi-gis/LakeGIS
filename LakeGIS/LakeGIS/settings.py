@@ -36,6 +36,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
+    'lakegis_app'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -57,6 +59,9 @@ WSGI_APPLICATION = 'LakeGIS.wsgi.application'
 
 DATABASES = {
     'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+	'NAME': 'lakegis',
+	'USER': 'lakegis'
     }
 }
 

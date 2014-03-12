@@ -1,0 +1,2 @@
+DROP DATABASE IF EXISTS lakegis;
+DROP ROLE IF EXISTS lakegis;
