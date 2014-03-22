@@ -15,6 +15,8 @@ DB_LOGIN_PASSWORD=${DB_LOGIN_PASSWORD:=$DEFAULT_DB_LOGIN_PASSWORD}
 TEMPLATE_DB_NAME=${TEMPLATE_DB_NAME:=$DEFAULT_TEMPLATE_DB_NAME}
 DB_SUPERUSER=${DB_SUPERUSER:=$DEFAULT_DB_SUPERUSER}
 
+cd `dirname $0`
+
 echo "Script will create database \"$DB_NAME\" from template \"$TEMPLATE_DB_NAME\"."
 echo "Script will also create database user \"$DB_LOGIN\" with password $DB_LOGIN_PASSWORD. This user will be given full access to created database."
 echo "Will use \"$DB_SUPERUSER\" as database superuser. Depending on your PostgreSQL configuration, you may be asked to enter password several times"
