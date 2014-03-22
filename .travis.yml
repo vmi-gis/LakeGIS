@@ -8,7 +8,8 @@ python:
 install:
         - pip install -r requirements.txt
 before_script:
-        - psql -U postgres -d postgres -f dbscripts/init.sql
+        - psql -U postgres -d postgres -f dbscripts/init-template.sql
+        - dbscripts/init.sh
         - python LakeGIS/manage.py syncdb --noinput
 script:
         - python LakeGIS/manage.py test

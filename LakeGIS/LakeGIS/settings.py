@@ -58,22 +58,13 @@ WSGI_APPLICATION = 'LakeGIS.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
-if 'test' in sys.argv:
-    DATABASES = {
-        'default': {
-	    'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': 'lakegis',
-            'USER': 'postgres'
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'lakegis',
+        'USER': 'lakegis'
     }
-else:
-    DATABASES = {
-        'default': {
-	    'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': 'lakegis',
-            'USER': 'lakegis'
-        }
-    }
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
@@ -93,3 +84,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+try:
+    from local_settings import *
+except ImportError:
+    pass
+
