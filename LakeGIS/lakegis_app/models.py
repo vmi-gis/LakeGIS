@@ -29,7 +29,7 @@ class SettlementModel(models.Model):
 
 class RecreationCenterModel(models.Model):
     name = models.CharField(max_length = 50)
-    geom = models.MultiPolygonField()
+    geom = models.PointField()
 
     objects = models.GeoManager()
 
