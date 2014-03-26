@@ -12,16 +12,6 @@ class ShapefileArchiveError(RegionImportError):
 class ShapefileError(RegionImportError):
     pass
 
-def extract_files(archive, destdir):
-    for member in archive.getnames():
-        output_dir = os.path.join(destdir, os.path.dirname(member))
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-
-        output_file = open(os.path.join(destdir, member), 'wb')
-        output_file.write(archive.getmember(member).read())
-        output_file.close()
-
 def _extract_files(archive, destdir, files):
     for f in files:
         output_dir = os.path.join(destdir, os.path.dirname(f))
@@ -32,20 +22,20 @@ def _extract_files(archive, destdir, files):
         output_file.write(archive.getmember(f).read())
         output_file.close()
 
-def download(url, destination):
+def _download(url, destination):
     import urllib
     urllib.urlretrieve(url, destination)
 
-def feature_field_set(feature, field):
+def _feature_field_set(feature, field):
     return feature.get(field) != ''
 
-def polygon_to_multipolygon(wkt):
+def _polygon_to_multipolygon(wkt):
     if wkt[:4] == 'POLY':
         wkt = wkt.replace('POLYGON (', 'MULTIPOLYGON((') + ')'
 
     return wkt
 
-def line_to_multiline(wkt):
+def _line_to_multiline(wkt):
     if wkt[:4] == 'LINE':
         wkt = wkt.replace('LINESTRING (', 'MULTILINESTRING((') + ')'
 
@@ -58,14 +48,14 @@ def _add_water(feature, region):
         return
 
     name = None
-    if not feature_field_set(feature, 'NAME'):
+    if not _feature_field_set(feature, 'NAME'):
         name = '[Безымянный водоем]'
     else:
         name = feature.get('NAME')
 
     wkt = feature.geom.wkt
     if feature.geom_type == 'Polygon':
-        wkt = polygon_to_multipolygon(wkt)
+        wkt = _polygon_to_multipolygon(wkt)
 
     water = models.WaterModel.objects.create(name = name, geom = wkt, region = region)
     water.save()
@@ -75,28 +65,28 @@ def _add_forest(feature, region):
         return
 
     name = None
-    if not feature_field_set(feature, 'NAME'):
+    if not _feature_field_set(feature, 'NAME'):
         name = '[Безымянный лес]'
     else:
         name = feature.get('NAME')
 
     wkt = feature.geom.wkt
     if feature.geom_type == 'Polygon':
-        wkt = polygon_to_multipolygon(wkt)
+        wkt = _polygon_to_multipolygon(wkt)
 
     forest = models.ForestModel.objects.create(name = name, geom = wkt, region = region)
     forest.save()
 
 def _add_settlement(feature, region):
     name = None
-    if not feature_field_set(feature, 'NAME'):
+    if not _feature_field_set(feature, 'NAME'):
         name = '[Безымянный населенный пункт]'
     else:
         name = feature.get('NAME')
 
     wkt = feature.geom.wkt
     if feature.geom_type == 'Polygon':
-        wkt = polygon_to_multipolygon(wkt)
+        wkt = _polygon_to_multipolygon(wkt)
 
     settlement = models.SettlementModel.objects.create(name = name, geom = wkt, region = region)
     settlement.save()
@@ -112,7 +102,7 @@ def _add_highway(feature, region):
     if not feature.get('HIGHWAY') in proper_highway_classes:
         return
     name = None
-    if not feature_field_set(feature, 'NAME'):
+    if not _feature_field_set(feature, 'NAME'):
         name = feature.get('REF')
         if name == '':
             name = '[Безымянная трасса]'
@@ -121,7 +111,7 @@ def _add_highway(feature, region):
 
     wkt = feature.geom.wkt
     if feature.geom_type == 'Linestring':
-        wkt = line_to_multiline(wkt)
+        wkt = _line_to_multiline(wkt)
 
     highway = models.HighwayModel.objects.create(name = name, geom = wkt, region = region)
     highway.save()
@@ -135,7 +125,7 @@ def _add_railway_station(feature, region):
         return
     
     name = None
-    if not feature_field_set(feature, 'NAME'):
+    if not _feature_field_set(feature, 'NAME'):
         name = '[Безымянная станция]'
     else:
         name = feature.get('NAME')
@@ -167,7 +157,7 @@ def import_region(region):
     filename = os.path.join(tempdir, 'region.7z')
     
     try:
-        download(region.shapefile_archive_url, filename)
+        _download(region.shapefile_archive_url, filename)
         archive_file = open(filename, 'rb')
         archive = py7zlib.Archive7z(archive_file)
 
