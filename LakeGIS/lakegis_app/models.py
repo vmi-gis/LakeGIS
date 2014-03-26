@@ -7,6 +7,15 @@ class RegionModel(models.Model):
     def __unicode__(self):
         return self.name
 
+class RegionBorderModel(models.Model):
+    geom = models.MultiPolygonField()
+    region = models.ForeignKey(RegionModel)
+
+    objects = models.GeoManager()
+
+    def __unicode__(self):
+        return self.region.name
+
 class WaterModel(models.Model):
     name = models.CharField(max_length = 50)
     geom = models.MultiPolygonField()

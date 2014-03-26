@@ -2,6 +2,8 @@
 import os
 
 import models
+    
+SHAPEFILE_EXTENSIONS = ['.shp', '.dbf', '.shx']
 
 class RegionImportError(Exception):
     pass
@@ -137,7 +139,6 @@ def _add_railway_station(feature, region):
 def _import_layer(region, data_archive, data_dir, shapefile_basename, model, import_fun):
     from django.contrib.gis.gdal import DataSource
 
-    SHAPEFILE_EXTENSIONS = ['.shp', '.dbf', '.shx']
     shapefiles = [shapefile_basename + extension for extension in SHAPEFILE_EXTENSIONS]
     _extract_files(data_archive, data_dir, shapefiles)
     main_shapefile = os.path.join(data_dir, shapefiles[0])
@@ -146,6 +147,27 @@ def _import_layer(region, data_archive, data_dir, shapefile_basename, model, imp
     layer = data_source[0]
     for feature in layer:
         import_fun(feature, region)
+
+def _import_region_borders(region, data_archive, data_dir):
+    from django.contrib.gis.gdal import DataSource
+
+    shapefile_basename = 'data/boundary-polygon'
+    shapefiles = [shapefile_basename + extension for extension in SHAPEFILE_EXTENSIONS]
+    _extract_files(data_archive, data_dir, shapefiles)
+    main_shapefile = os.path.join(data_dir, shapefiles[0])
+    data_source = DataSource(main_shapefile)
+    models.RegionBorderModel.objects.filter(region__exact = region).delete()
+    layer = data_source[0]
+
+    boundaries_list = [(feature.geom.area, feature.geom) for feature in layer]
+    biggest_boundary = max(boundaries_list, key = lambda x : x[0])[1]
+
+    biggest_boundary_wkt = biggest_boundary.wkt
+    if biggest_boundary.geom_type == 'Polygon':
+        biggest_boundary_wkt = _polygon_to_multipolygon(biggest_boundary_wkt)
+
+    region_boundary = models.RegionBorderModel.objects.create(region = region, geom = biggest_boundary_wkt)
+    region_boundary.save()
 
 def import_region(region):
     import shutil
@@ -171,6 +193,7 @@ def import_region(region):
         ]
         for imported_layer in imported_layers:
             _import_layer(region, archive, tempdir, imported_layer[0], imported_layer[1], imported_layer[2])
+        _import_region_borders(region, archive, tempdir)
     except py7zlib.ArchiveError as e:
         raise ShapefileArchiveError(str(e))
     except django.contrib.gis.gdal.error.OGRException as e:
