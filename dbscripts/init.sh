@@ -22,7 +22,7 @@ echo "Script will also create database user \"$DB_LOGIN\" with password $DB_LOGI
 echo "Will use \"$DB_SUPERUSER\" as database superuser. Depending on your PostgreSQL configuration, you may be asked to enter password."
 echo
 
-psql -U $DB_SUPERUSER -d postgres -v "DB_NAME=$DB_NAME" -v"DB_LOGIN=$DB_LOGIN" -v "DB_LOGIN_PASSWORD=$DB_LOGIN_PASSWORD" -v "TEMPLATE_DB_NAME=$TEMPLATE_DB_NAME" -f init.sql 2>/dev/null
+psql -U $DB_SUPERUSER -d postgres -v "DB_NAME=$DB_NAME" -v"DB_LOGIN=$DB_LOGIN" -v "DB_LOGIN_PASSWORD=$DB_LOGIN_PASSWORD" -v "TEMPLATE_DB_NAME=$TEMPLATE_DB_NAME" -f init.sql
 
 if [ "$DB_NAME" != "$DEFAULT_DB_NAME" -o "$DB_LOGIN" != "$DEFAULT_DB_LOGIN" -o "$DB_LOGIN_PASSWORD" != "$DEFAULT_DB_LOGIN_PASSWORD" ]; then
 	echo
