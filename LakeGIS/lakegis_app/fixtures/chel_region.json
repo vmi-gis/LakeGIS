@@ -1,0 +1,11 @@
+[
+	{
+		"model": "lakegis_app.RegionModel",
+		"pk": 1,
+		"fields": {
+			"name" : "Челябинская область",
+			"shapefile_archive_url" : "http://be.gis-lab.info/data/osmshp/latest/RU-CHE.7z"
+		}
+	}
+]
+
