@@ -12,4 +12,4 @@ before_script:
         - dbscripts/init.sh
         - python LakeGIS/manage.py syncdb --noinput
 script:
-        - python LakeGIS/manage.py test
+        - python LakeGIS/manage.py test lakegis_app
