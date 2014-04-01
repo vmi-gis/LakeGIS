@@ -82,7 +82,8 @@ def _place_is_allowed(place, allowed_tags, forbidden_tags):
     return is_allowed
 
 def _place_to_recreation_center(place, region):
-    name = _get_place_name(place)
+    MAX_NAME_LENGTH = models.RecreationCenterModel._meta.get_field('name').max_length
+    name = _get_place_name(place)[:MAX_NAME_LENGTH]
     geom = _get_place_wkt(place)
     return models.RecreationCenterModel(region = region, name = name, geom = geom)
 

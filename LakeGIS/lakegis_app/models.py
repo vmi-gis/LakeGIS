@@ -47,7 +47,7 @@ class SettlementModel(models.Model):
         return self.name + ' (' + self.region.name + ')'
 
 class RecreationCenterModel(models.Model):
-    name = models.CharField(max_length = 50)
+    name = models.CharField(max_length = 200)
     geom = models.PointField()
     region = models.ForeignKey(RegionModel)
 
