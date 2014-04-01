@@ -7,7 +7,7 @@ install:
 - pip install -r requirements.txt
 before_script:
 - psql -U postgres -d postgres -f dbscripts/init-template.sql
-- echo "WIKIMAPIA_API_KEY = $WM_API_KEY" >> LakeGIS/LakeGIS/local_settings.py
+- echo "WIKIMAPIA_API_KEY = '$WM_API_KEY'" >> LakeGIS/LakeGIS/local_settings.py
 - dbscripts/init.sh
 - python LakeGIS/manage.py syncdb --noinput
 script:
