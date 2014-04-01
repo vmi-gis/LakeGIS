@@ -1,3 +1,4 @@
+# coding: utf8
 """
 Django settings for LakeGIS project.
 
@@ -84,6 +85,30 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# API-ключ для викимапии должен быть в local_settings.py
+WIKIMAPIA_API_KEY = ''
+
+WIKIMAPIA_SEARCH_SETTINGS = {
+    'query_string' : 'база+отдыха+санаторий+ГЛЦ',
+    'allowed_categories' : [
+        58568, # база отдыха
+        31250, # дом отдыха
+        16969, # санаторий/профилакторий
+        44710, # пансионат
+        50,    # гостиница
+        44740, # летний оздоровительный/трудовой лагерь
+        3220,  # лыжный спорт
+        32193, # горнолыжный курорт
+        623,   # кемпинг
+    ],
+    'forbidden_categories' : [
+        45716, # нежилое здание
+        194,   # парк
+        557,   # развалины, руины
+        2390,  # заброшенный, неиспользуемый объект
+    ]
+}
 
 try:
     from local_settings import *

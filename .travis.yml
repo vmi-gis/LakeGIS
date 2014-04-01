@@ -1,15 +1,17 @@
 language: python
-
 addons:
-        postgresql: "9.3"
-
+  postgresql: '9.3'
 python:
-        - "2.7"
+- '2.7'
 install:
-        - pip install -r requirements.txt
+- pip install -r requirements.txt
 before_script:
-        - psql -U postgres -d postgres -f dbscripts/init-template.sql
-        - dbscripts/init.sh
-        - python LakeGIS/manage.py syncdb --noinput
+- psql -U postgres -d postgres -f dbscripts/init-template.sql
+- echo "WIKIMAPIA_API_KEY = $WM_API_KEY" >> LakeGIS/LakeGIS/local_settings.py
+- dbscripts/init.sh
+- python LakeGIS/manage.py syncdb --noinput
 script:
-        - python LakeGIS/manage.py test lakegis_app
+- python LakeGIS/manage.py test lakegis_app
+env:
+  global:
+    secure: AJrJ4u4Q5+za07OkCs//hDzbI9UXcnF8XFiLsqb4sxUxhgAzaYEpglpgm7yKEOxxz2XhBuGSFHh6TPOhfltbKZTuDZr518hLZC5zr1S24aZCrI7wEHzLdbVyaGZ1PXCaOEbZkwj5GQcEOMbmB2CnHdP7ucE/4tYcQ+O/HpnFJ6Y=

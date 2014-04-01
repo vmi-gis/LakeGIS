@@ -2,16 +2,14 @@
 import os
 
 import models
+import data_import_errors
     
 SHAPEFILE_EXTENSIONS = ['.shp', '.dbf', '.shx']
 
-class RegionImportError(Exception):
+class ShapefileArchiveError(data_import_errors.RegionImportError):
     pass
 
-class ShapefileArchiveError(RegionImportError):
-    pass
-
-class ShapefileError(RegionImportError):
+class ShapefileError(data_import_errors.RegionImportError):
     pass
 
 def _extract_files(archive, destdir, files):
