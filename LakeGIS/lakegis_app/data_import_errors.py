@@ -1,0 +1,2 @@
+class RegionImportError(Exception):
+    pass

@@ -2,16 +2,14 @@
 import os
 
 import models
+import data_import_errors
     
 SHAPEFILE_EXTENSIONS = ['.shp', '.dbf', '.shx']
 
-class RegionImportError(Exception):
+class ShapefileArchiveError(data_import_errors.RegionImportError):
     pass
 
-class ShapefileArchiveError(RegionImportError):
-    pass
-
-class ShapefileError(RegionImportError):
+class ShapefileError(data_import_errors.RegionImportError):
     pass
 
 def _extract_files(archive, destdir, files):
@@ -43,17 +41,18 @@ def _line_to_multiline(wkt):
 
     return wkt
 
-
 def _add_water(feature, region):
+    MAX_NAME_LENGTH = models.WaterModel._meta.get_field('name').max_length
     # Болота не добавляем
     if feature.get('NATURAL') == 'wetland':
         return
 
     name = None
     if not _feature_field_set(feature, 'NAME'):
-        name = '[Безымянный водоем]'
+        name = u'[Безымянный водоем]'
     else:
         name = feature.get('NAME')
+    name = name[:MAX_NAME_LENGTH]
 
     wkt = feature.geom.wkt
     if feature.geom_type == 'Polygon':
@@ -63,14 +62,16 @@ def _add_water(feature, region):
     water.save()
 
 def _add_forest(feature, region):
+    MAX_NAME_LENGTH = models.ForestModel._meta.get_field('name').max_length
     if feature.get('NATURAL') != 'forest' and feature.get('WOOD') == '':
         return
 
     name = None
     if not _feature_field_set(feature, 'NAME'):
-        name = '[Безымянный лес]'
+        name = u'[Безымянный лес]'
     else:
         name = feature.get('NAME')
+    name = name[:MAX_NAME_LENGTH]
 
     wkt = feature.geom.wkt
     if feature.geom_type == 'Polygon':
@@ -80,11 +81,13 @@ def _add_forest(feature, region):
     forest.save()
 
 def _add_settlement(feature, region):
+    MAX_NAME_LENGTH = models.SettlementModel._meta.get_field('name').max_length
     name = None
     if not _feature_field_set(feature, 'NAME'):
-        name = '[Безымянный населенный пункт]'
+        name = u'[Безымянный населенный пункт]'
     else:
         name = feature.get('NAME')
+    name = name[:MAX_NAME_LENGTH]
 
     wkt = feature.geom.wkt
     if feature.geom_type == 'Polygon':
@@ -94,6 +97,7 @@ def _add_settlement(feature, region):
     settlement.save()
 
 def _add_highway(feature, region):
+    MAX_NAME_LENGTH = models.HighwayModel._meta.get_field('name').max_length
     proper_highway_classes = [
             'motorway',
             'trunk',
@@ -107,9 +111,10 @@ def _add_highway(feature, region):
     if not _feature_field_set(feature, 'NAME'):
         name = feature.get('REF')
         if name == '':
-            name = '[Безымянная трасса]'
+            name = u'[Безымянная трасса]'
     else:
         name = feature.get('NAME')
+    name = name[:MAX_NAME_LENGTH]
 
     wkt = feature.geom.wkt
     if feature.geom_type == 'Linestring':
@@ -119,6 +124,7 @@ def _add_highway(feature, region):
     highway.save()
 
 def _add_railway_station(feature, region):
+    MAX_NAME_LENGTH = models.RailwayStationModel._meta.get_field('name').max_length
     proper_railway_stations = [
             'station',
             'halt'
@@ -128,9 +134,10 @@ def _add_railway_station(feature, region):
     
     name = None
     if not _feature_field_set(feature, 'NAME'):
-        name = '[Безымянная станция]'
+        name = u'[Безымянная станция]'
     else:
         name = feature.get('NAME')
+    name = name[:MAX_NAME_LENGTH]
 
     wkt = feature.geom.wkt
     station = models.RailwayStationModel.objects.create(name = name, geom = wkt, region = region)

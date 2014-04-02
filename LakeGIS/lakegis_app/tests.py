@@ -16,7 +16,7 @@ class DataImportCase(TestCase):
         cutted_region = models.RegionModel.objects.get(name = u'Cutted')
         data_import.import_region(cutted_region)
 
-        for model in [models.WaterModel, models.ForestModel, models.SettlementModel, models.HighwayModel, models.RailwayStationModel]:
+        for model in [models.RegionBorderModel, models.WaterModel, models.ForestModel, models.SettlementModel, models.HighwayModel, models.RailwayStationModel]:
             self.assertTrue(model.objects.count() > 0)
 
     def test_corrupted_shapefile(self):
