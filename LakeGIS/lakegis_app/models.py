@@ -53,6 +53,23 @@ class RecreationCenterModel(models.Model):
 
     objects = models.GeoManager()
 
+    #The following fields contain all the nearest objects to recreation center (in kilometres)
+    dist_to_water = models.FloatField()
+    nearest_water = models.ForeignKey(WaterModel)
+
+    dist_to_forest = models.FloatField()
+    nearest_forest = models.ForeignKey(ForestModel)
+
+    dist_to_highway = models.FloatField()
+    nearest_highway = models.ForeignKey(HighwayModel)
+
+    dist_to_railway_station = models.FloatField()
+    nearest_railway_station = models.ForeignKey(RailwayStationModel)
+
+    dist_to_settlement = models.FloatField()
+    nearest_settlement = models.ForeignKey(SettlementModel)
+    #----------------------------------------
+
     def __unicode__(self):
         return self.name + ' (' + self.region.name + ')'
 
