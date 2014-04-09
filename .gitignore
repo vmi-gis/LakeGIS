@@ -6,5 +6,6 @@ bin
 lib
 include
 local
+.idea
 *~
 *.swp
