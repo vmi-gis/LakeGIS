@@ -5,7 +5,11 @@
 <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
 <script src="http://code.jquery.com/jquery-1.4.4.min.js"></script>
 <script>
-var map, marker, RecreationCenters = {};
+var map, 
+marker, 
+RecreationCenters = {}, 
+marker_center,
+markers = [];
 
 {% for RecreationModel in lakegis_app %}
 RecreationCenters[{{RecreationModel.id}}] = {
@@ -31,29 +35,117 @@ function initializeMaps() {
       			map: map, 
       			title:RecreationCenters[i].name
     		}); 
+		markers.push(marker);
 	
 		google.maps.event.addListener(marker, 'click', (function(marker, i) {
-        	return function() {
-        		infowindow.setContent(RecreationCenters[i].name);
-        		infowindow.open(map, marker);
+	        	return function() {
+        			infowindow.setContent(RecreationCenters[i].name);
+        			infowindow.open(map, marker);
         		}
     		})(marker, i));
 	}
 }
 
+
+
+$(document).ready(function(){
+    function activateRecreationCenters(){
+	$('.RecreationCenter').each(function(){
+            $(this).click(function(){
+		for (var i=0; i<markers.length; i++){
+			markers[i].setMap(null);
+		}
+		var recreationCenter = RecreationCenters[this.id];
+		var point = new google.maps.LatLng(recreationCenter.lat, recreationCenter.lng);
+		if (marker_center)
+			marker_center.setMap();
+                marker_center = new google.maps.Marker({
+                        position: point,
+                        map: map,
+                        title:recreationCenter.name
+                });
+
+		map.panTo(point);
+	
+		var infowindow = new google.maps.InfoWindow();
+		google.maps.event.addListener(marker_center, 'click', (function(marker_center) {
+                        return function() {
+                                infowindow.setContent(recreationCenter.name);
+                                infowindow.open(map, marker_center);
+                        }
+                })(marker_center));
+		
+
+
+	    }).hover(
+		function(){
+			this.className = this.className.replace('OFF', 'ON');
+		},
+		function(){
+			this.className = this.className.replace('ON', 'OFF');
+		}
+	    );
+	});
+    }
+    activateRecreationCenters();
+});
+
+function showAllCenters(){
+	for (var i=0; i<markers.length; i++){
+		markers[i].setMap(map);
+	}
+
+}
+
 </script>
 <style>
-    body {font-family: sans-serif}
-    #map {width: 1000px; height: 600px}
-    #waters {overflow: auto; width: 500px; height: 100px}
-    .linkOFF {color: darkblue}
-    .linkON {color: white; background-color: darkblue}
+    body {
+	font-family: sans-serif
+    }
+
+    #map {
+	position: absolute;
+	width: 800px; 
+	height: 600px;
+	display:block;
+	float: left;
+	margin: 20px
+    }
+
+    #RecreationCenters {
+	position: absolute;
+	left: 850px;
+	margin: 20px;
+	float: left;
+	overflow:auto;	 
+	width: 500px; 
+	height: 600px
+    }
+    .linkOFF {
+	color: darkblue
+    }
+    .linkON {
+	color: white; 
+	background-color: darkblue
+    }
+
+    #ControlPanel{
+	position: absolute;
+	top: 650px;
+        margin: 20px;
+	float: left;
+    }
+
 </style>
 </head>
 <body onload='initializeMaps()'>
-    <div id=map></div>
-    <div id=RecreationCenters>
-        {{content}}
-    </div>
+	<div id=map></div>
+	<div id=RecreationCenters>
+		{{content}}
+	</div>
+	<div id="ControlPanel">
+      		<input onclick="showAllCenters();" type=button value="Show All Recreation Centers">
+	</div>
+
 </body>
 </html>
