@@ -114,9 +114,9 @@ def _dist_to_water(rc):
     for wm in models.WaterModel.objects.distance(pnt):
          wms_distance.append(wm.distance.km),
          wms_geom.append(wm.geom)
-    models.RecreationCenterModel.dist_to_water = min(wms_distance)
+    rc.dist_to_water = min(wms_distance)
     w_index = wms_distance.index(min(wms_distance))
-    models.RecreationCenterModel.nearest_water = models.WaterModel.objects.filter(geom__contains=wms_geom[w_index])
+    rc.nearest_water = models.WaterModel.objects.get(geom__contains=wms_geom[w_index])
 
 
 def _dist_to_forest(rc):
@@ -126,9 +126,9 @@ def _dist_to_forest(rc):
     for f in models.ForestModel.objects.distance(pnt):
          fs_distance.append(f.distance.km),
          fs_geom.append(f.geom)
-    models.RecreationCenterModel.dist_to_forest = min(fs_distance)
+    rc.dist_to_forest = min(fs_distance)
     f_index = fs_distance.index(min(fs_distance))
-    models.RecreationCenterModel.nearest_forest = models.ForestModel.objects.filter(geom__contains=fs_geom[f_index])
+    rc.nearest_forest = models.ForestModel.objects.get(geom__contains=fs_geom[f_index])
 
 
 def _dist_to_highway(rc):
@@ -138,9 +138,9 @@ def _dist_to_highway(rc):
     for hw in models.HighwayModel.objects.distance(pnt):
          hws_distance.append(hw.distance.km),
          hws_geom.append(hw.geom)
-    models.RecreationCenterModel.dist_to_highway = min(hws_distance)
+    rc.dist_to_highway = min(hws_distance)
     hw_index = hws_distance.index(min(hws_distance))
-    models.RecreationCenterModel.nearest_highway = models.HighwayModel.objects.filter(geom__contains=hws_geom[hw_index])
+    rc.nearest_highway = models.HighwayModel.objects.get(geom__contains=hws_geom[hw_index])
 
 
 def _dist_to_railway_station(rc):
@@ -150,9 +150,9 @@ def _dist_to_railway_station(rc):
     for s in models.RailwayStationModel.objects.distance(pnt):
          rws_distance.append(s.distance.km),
          rws_geom.append(s.geom)
-    models.RecreationCenterModel.dist_to_railway_station = min(rws_distance)
+    rc.dist_to_railway_station = min(rws_distance)
     r_index = rws_distance.index(min(rws_distance))
-    models.RecreationCenterModel.nearest_railway_station = models.RailwayStationModel.objects.filter(geom__contains=rws_geom[r_index])
+    rc.nearest_railway_station = models.RailwayStationModel.objects.get(geom__contains=rws_geom[r_index])
 
 
 def _dist_to_settlement(rc):
@@ -162,9 +162,9 @@ def _dist_to_settlement(rc):
     for sm in models.SettlementModel.objects.distance(pnt):
          ss_distance.append(sm.distance.km),
          ss_geom.append(sm.geom)
-    models.RecreationCenterModel.dist_to_settlement = min(ss_distance)
+    rc.dist_to_settlement = min(ss_distance)
     sm_index = ss_distance.index(min(ss_distance))
-    models.RecreationCenterModel.nearest_settlement = models.SettlementModel.objects.filter(geom__contains=ss_geom[sm_index])
+    rc.nearest_settlement = models.SettlementModel.objects.get(geom__contains=ss_geom[sm_index])
 
 
 def _process_response(server_response, region, region_border, allowed_tags, forbidden_tags):
@@ -178,7 +178,7 @@ def _process_response(server_response, region, region_border, allowed_tags, forb
                 _dist_to_forest(recreation_center),
                 _dist_to_highway(recreation_center),
                 _dist_to_railway_station(recreation_center),
-                _dist_to_settlement(recreation_center)
+                _dist_to_settlement(recreation_center),
                 recreation_center.save()
 
     return num_places
