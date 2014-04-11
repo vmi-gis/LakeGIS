@@ -12,12 +12,24 @@ marker_center,
 markers = [];
 
 {% for RecreationModel in lakegis_app %}
-RecreationCenters[{{RecreationModel.id}}] = {
-    name: "{{RecreationModel.name}}",
-    lat: {{RecreationModel.geom.y}},
-    lng: {{RecreationModel.geom.x}},
+	RecreationCenters[{{RecreationModel.id}}] = {
+    		name: "{{RecreationModel.name}}",
+    		lat: {{RecreationModel.geom.y}},
+    		lng: {{RecreationModel.geom.x}},
+
+		nearest_water:"{{RecreationModel.nearest_water}}",
+		nearest_forest:"{{RecreationModel.nearest_forest}}",
+		nearest_highway:"{{RecreationModel.nearest_highway}}",
+		nearest_railway:"{{RecreationModel.nearest_railway_station}}",
+		nearest_settlement:"{{RecreationModel.nearest_settlement}}",
+
+		dist_to_water:{{RecreationModel.dist_to_water}},
+		dist_to_forest:{{RecreationModel.dist_to_forest}},
+		dist_to_highway:{{RecreationModel.dist_to_highway}},
+		dist_to_railway:{{RecreationModel.dist_to_railway_station}},
+		dist_to_settlement:{{RecreationModel.dist_to_settlement}}
    
-};
+	};
 {% endfor %}
 
 
@@ -39,8 +51,19 @@ function initializeMaps() {
 	
 		google.maps.event.addListener(marker, 'click', (function(marker, i) {
 	        	return function() {
-        			infowindow.setContent(RecreationCenters[i].name);
-        			infowindow.open(map, marker);
+        		    infowindow.setContent(RecreationCenters[i].name + '<br>' 
+				+ 'Ближайший водоём: ' + RecreationCenters[i].nearest_water 
+				+ '(' + RecreationCenters[i].dist_to_water + 'km)' + '<br>'
+				+ 'Ближайший лес: ' + RecreationCenters[i].nearest_forest 
+				+ '(' + RecreationCenters[i].dist_to_forest + 'km)' + '<br>'
+				+ 'Ближайшая трасса: ' + RecreationCenters[i].nearest_highway 
+				+ '(' + RecreationCenters[i].dist_to_highway + 'km)' + '<br>'
+				+ 'Ближайшая ж/д станция: ' + RecreationCenters[i].nearest_railway 
+				+ '(' + RecreationCenters[i].dist_to_railway + 'km)' + '<br>'
+				+ 'Ближайший населённый пункт: ' + RecreationCenters[i].nearest_settlement
+				+ '(' + RecreationCenters[i].dist_to_settlement + 'km)' 
+			    );
+        		    infowindow.open(map, marker);
         		}
     		})(marker, i));
 	}
@@ -70,7 +93,20 @@ $(document).ready(function(){
 		var infowindow = new google.maps.InfoWindow();
 		google.maps.event.addListener(marker_center, 'click', (function(marker_center) {
                         return function() {
-                                infowindow.setContent(recreationCenter.name);
+                            	infowindow.setContent(recreationCenter.name + '<br>'
+	                                + 'Ближайший водоём: ' + recreationCenter.nearest_water
+        	                        + '(' + recreationCenter.dist_to_water + 'km)' + '<br>'
+                	                + 'Ближайший лес: ' + recreationCenter.nearest_forest
+                        	        + '(' + recreationCenter.dist_to_forest + 'km)' + '<br>'
+                                	+ 'Ближайшая трасса: ' + recreationCenter.nearest_highway
+	                                + '(' + recreationCenter.dist_to_highway + 'km)' + '<br>'
+        	                        + 'Ближайшая ж/д станция: ' + recreationCenter.nearest_railway
+                	                + '(' + recreationCenter.dist_to_railway + 'km)' + '<br>'
+                        	        + 'Ближайший населённый пункт: ' + recreationCenter.nearest_settlement
+                                	+ '(' + recreationCenter.dist_to_settlement + 'km)'
+                            	);
+
+
                                 infowindow.open(map, marker_center);
                         }
                 })(marker_center));
@@ -144,7 +180,7 @@ function showAllCenters(){
 		{{content}}
 	</div>
 	<div id="ControlPanel">
-      		<input onclick="showAllCenters();" type=button value="Show All Recreation Centers">
+      		<input onclick="showAllCenters();" type=button value="Отобразить все известные базы отдыха">
 	</div>
 
 </body>
