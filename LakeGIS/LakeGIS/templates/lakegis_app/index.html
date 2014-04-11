@@ -9,7 +9,12 @@ var map,
 marker, 
 RecreationCenters = {}, 
 marker_center,
-markers = [];
+markers = [],
+water_distances = [],
+forest_distances = [],
+highway_distances = [],
+railway_distances = [],
+settlement_distances = [];
 
 {% for RecreationModel in lakegis_app %}
 	RecreationCenters[{{RecreationModel.id}}] = {
@@ -48,6 +53,12 @@ function initializeMaps() {
       			title:RecreationCenters[i].name
     		}); 
 		markers.push(marker);
+		water_distances.push(RecreationCenters[i].dist_to_water);
+		forest_distances.push(RecreationCenters[i].dist_to_forest);
+		highway_distances.push(RecreationCenters[i].dist_to_highway);
+		railway_distances.push(RecreationCenters[i].dist_to_railway);
+		settlement_distances.push(RecreationCenters[i].dist_to_settlement);
+
 	
 		google.maps.event.addListener(marker, 'click', (function(marker, i) {
 	        	return function() {
@@ -133,6 +144,40 @@ function showAllCenters(){
 
 }
 
+function showCentersByCriteria(){
+	for (var i=0; i<markers.length; i++){
+		if (	(
+			$('#min_dist_to_water').val()=="" || $('#max_dist_to_water').val()=="" 
+		    	|| ( water_distances[i]>$('#min_dist_to_water').val() && water_distances[i]<$('#max_dist_to_water').val() )
+			)
+		    && 
+			(
+			$('#min_dist_to_forest').val()=="" || $('#max_dist_to_forest').val()==""
+			|| ( forest_distances[i]>$('#min_dist_to_forest').val() && forest_distances[i]<$('#max_dist_to_forest').val() )
+			)
+		    && 
+			(
+			$('#min_dist_to_highway').val()=="" || $('#max_dist_to_highway').val()==""
+			|| ( highway_distances[i]>$('#min_dist_to_highway').val() && highway_distances[i]<$('#max_dist_to_highway').val() )
+			)
+		    && 
+			(
+			$('#min_dist_to_railway').val()=="" || $('#max_dist_to_railway').val()==""
+			|| ( railway_distances[i]>$('#min_dist_to_railway').val() && railway_distances[i]<$('#max_dist_to_railway').val() )
+			)
+		    && 
+			(
+			$('#min_dist_to_settlement').val()=="" || $('#max_dist_to_settlement').val()==""
+			|| ( settlement_distances[i]>$('#min_dist_to_settlement').val() && settlement_distances[i]<$('#max_dist_to_settlement').val() )
+			)
+		){
+			markers[i].setMap(map);
+		} else {
+			markers[i].setMap(null);
+		}
+	}
+}
+
 </script>
 <style>
     body {
@@ -172,6 +217,17 @@ function showAllCenters(){
 	float: left;
     }
 
+    .Criteria{
+	float: left;
+	display: inline;
+	margin-right: 30px;
+    }
+
+    .header{
+	font-size: 20px;
+	height: 30px;
+}
+
 </style>
 </head>
 <body onload='initializeMaps()'>
@@ -181,6 +237,34 @@ function showAllCenters(){
 	</div>
 	<div id="ControlPanel">
       		<input onclick="showAllCenters();" type=button value="Отобразить все известные базы отдыха">
+		<input onclick="showCentersByCriteria()" type=button value="Отобразить базы по критериям поиска">
+		<div class="header"><br><b>Критерии поиска:</b></div><br><br>
+		<div class="Criteria">
+			<b>Расстояние до водоёма (km)</b><br>
+			Минимальное: <br> <input name=min_dist_to_water id="min_dist_to_water" type="text" size="10" float="right"><br>
+			Максимальное: <br> <input name=max_dist_to_water id="max_dist_to_water" type="text" size="10"><br>
+		</div>
+                <div class="Criteria">
+                        <b>Расстояние до леса (km)</b><br>
+                        Минимальное: <br> <input name=min_dist_to_forest id="min_dist_to_forest" type="text" size="10" float="right"><br>
+                        Максимальное: <br> <input name=max_dist_to_forest id="max_dist_to_forest" type="text" size="10"><br>
+                </div>
+                <div class="Criteria">
+                        <b>Расстояние до трассы (km)</b><br>
+                        Минимальное: <br> <input name=min_dist_to_highway id="min_dist_to_highway" type="text" size="10" float="right"><br>
+                        Максимальное: <br> <input name=max_dist_to_highway id="max_dist_to_highway" type="text" size="10"><br>
+                </div>
+                <div class="Criteria">
+                        <b>Расстояние до ж/д станции (km)</b><br>
+                        Минимальное: <br> <input name=min_dist_to_railway id="min_dist_to_railway" type="text" size="10" float="right"><br>
+                        Максимальное: <br> <input name=max_dist_to_railway id="max_dist_to_railway" type="text" size="10"><br>
+                </div>
+                <div class="Criteria">
+                        <b>Расстояние до населённого пункта (km)</b><br>
+                        Минимальное: <br> <input name=min_dist_to_settlement id="min_dist_to_settlement" type="text" size="10" float="right"><br>
+                        Максимальное: <br> <input name=max_dist_to_settlement id="max_dist_to_settlement" type="text" size="10"><br>
+                </div>
+
 	</div>
 
 </body>
