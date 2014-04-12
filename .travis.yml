@@ -13,7 +13,6 @@ before_script:
 - echo -n $SSH_KEY_{00..35} >> ~/.ssh/id_rsa_base64
 - base64 --decode --ignore-garbage ~/.ssh/id_rsa_base64 > ~/.ssh/id_rsa
 - chmod 600 ~/.ssh/id_rsa
-- ssh-add ~/.ssh/id_rsa
 script:
 - python LakeGIS/manage.py test lakegis_app
 after_success:
