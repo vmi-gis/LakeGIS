@@ -10,7 +10,7 @@ before_script:
 - dbscripts/init.sh
 - python LakeGIS/manage.py syncdb --noinput
 - echo "WIKIMAPIA_API_KEY = '$WM_API_KEY'" >> LakeGIS/LakeGIS/local_settings.py
-- echo -n $SSH_KEY_{00..35} >> ~/.ssh/id_rsa_base64
+- echo -n $SSH_KEY_{1..35} >> ~/.ssh/id_rsa_base64
 - base64 --decode --ignore-garbage ~/.ssh/id_rsa_base64 > ~/.ssh/id_rsa
 - chmod 600 ~/.ssh/id_rsa
 - echo -e "Host vmigis.cloudapp.net\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
