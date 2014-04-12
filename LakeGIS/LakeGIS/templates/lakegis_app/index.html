@@ -4,6 +4,7 @@
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
 <script src="http://code.jquery.com/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&libraries=geometry"></script>
 <script>
 var map, 
 marker, 
@@ -14,7 +15,12 @@ water_distances = [],
 forest_distances = [],
 highway_distances = [],
 railway_distances = [],
-settlement_distances = [];
+settlement_distances = [],
+water_line,
+forest_line,
+highway_line,
+railway_line,
+settlement_line;
 
 {% for RecreationModel in lakegis_app %}
 	RecreationCenters[{{RecreationModel.id}}] = {
@@ -23,10 +29,24 @@ settlement_distances = [];
     		lng: {{RecreationModel.geom.x}},
 
 		nearest_water:"{{RecreationModel.nearest_water}}",
+		nearest_water_x:{{RecreationModel.nearest_water.geom.centroid.x}},
+		nearest_water_y:{{RecreationModel.nearest_water.geom.centroid.y}},
+
 		nearest_forest:"{{RecreationModel.nearest_forest}}",
+		nearest_forest_x:{{RecreationModel.nearest_forest.geom.centroid.x}},
+                nearest_forest_y:{{RecreationModel.nearest_forest.geom.centroid.y}},
+
 		nearest_highway:"{{RecreationModel.nearest_highway}}",
+		nearest_highway_x:{{RecreationModel.nearest_highway.geom.centroid.x}},
+                nearest_highway_y:{{RecreationModel.nearest_highway.geom.centroid.y}},
+
 		nearest_railway:"{{RecreationModel.nearest_railway_station}}",
+		nearest_railway_x:{{RecreationModel.nearest_railway_station.geom.x}},
+                nearest_railway_y:{{RecreationModel.nearest_railway_station.geom.y}},
+
 		nearest_settlement:"{{RecreationModel.nearest_settlement}}",
+		nearest_settlement_x:{{RecreationModel.nearest_settlement.geom.centroid.x}},
+                nearest_settlement_y:{{RecreationModel.nearest_settlement.geom.centroid.y}},
 
 		dist_to_water:{{RecreationModel.dist_to_water}},
 		dist_to_forest:{{RecreationModel.dist_to_forest}},
@@ -37,12 +57,77 @@ settlement_distances = [];
 	};
 {% endfor %}
 
+function removeLines(){
+	if (water_line){
+        	 water_line.setMap(null);
+	}
+        if (forest_line){
+        	forest_line.setMap(null);
+        }
+	if (highway_line){
+		highway_line.setMap(null);
+	}
+	if (railway_line){
+		railway_line.setMap(null);
+	}
+	if (settlement_line){
+		settlement_line.setMap(null);
+	}
+}
+
+function setLines(recreationCenter){
+	water_line = new google.maps.Polyline({
+                        path: [new google.maps.LatLng(recreationCenter.nearest_water_y, recreationCenter.nearest_water_x),
+                        new google.maps.LatLng(recreationCenter.lat, recreationCenter.lng)],
+                        strokeColor: "#0000ff",
+                        strokeOpacity: 1.0,
+                        strokeWeight: 2,
+                        map: map
+                });
+
+                forest_line = new google.maps.Polyline({
+                        path: [new google.maps.LatLng(recreationCenter.nearest_forest_y, recreationCenter.nearest_forest_x),
+                        new google.maps.LatLng(recreationCenter.lat, recreationCenter.lng)],
+                        strokeColor: "#00ff00",
+                        strokeOpacity: 1.0,
+                        strokeWeight: 2,
+                        map: map
+                });
+
+                highway_line = new google.maps.Polyline({
+                        path: [new google.maps.LatLng(recreationCenter.nearest_highway_y, recreationCenter.nearest_highway_x),
+                        new google.maps.LatLng(recreationCenter.lat, recreationCenter.lng)],
+                        strokeColor: "#ffe800",
+                        strokeOpacity: 1.0,
+                        strokeWeight: 2,
+                        map: map
+                });
+
+                railway_line = new google.maps.Polyline({
+                        path: [new google.maps.LatLng(recreationCenter.nearest_railway_y, recreationCenter.nearest_railway_x),
+                        new google.maps.LatLng(recreationCenter.lat, recreationCenter.lng)],
+                        strokeColor: "#b20075",
+                        strokeOpacity: 1.0,
+                        strokeWeight: 2,
+                        map: map
+                });
+
+                settlement_line = new google.maps.Polyline({
+                        path: [new google.maps.LatLng(recreationCenter.nearest_settlement_y, recreationCenter.nearest_settlement_x),
+                        new google.maps.LatLng(recreationCenter.lat, recreationCenter.lng)],
+                        strokeColor: "#ff0000",
+                        strokeOpacity: 1.0,
+                        strokeWeight: 2,
+                        map: map
+                });
+
+}
 
 function initializeMaps() {
     map = new google.maps.Map(document.getElementById('map'), {
         zoom: 8,
         center: new google.maps.LatLng(54.9870700737, 61.5862655554),
-        mapTypeId: google.maps.MapTypeId.ROADMAP
+        mapTypeId: google.maps.MapTypeId.HYBRID
 	});
 	var infowindow = new google.maps.InfoWindow(), marker, i;
 	for (var i in RecreationCenters) {
@@ -75,8 +160,14 @@ function initializeMaps() {
 				+ '(' + RecreationCenters[i].dist_to_settlement + 'km)' 
 			    );
         		    infowindow.open(map, marker);
+
+			    removeLines();
+			    setLines(RecreationCenters[i]);	    
+
         		}
     		})(marker, i));
+		
+
 	}
 }
 
@@ -100,7 +191,10 @@ $(document).ready(function(){
                 });
 
 		map.panTo(point);
-	
+
+		removeLines();
+		setLines(recreationCenter);
+		
 		var infowindow = new google.maps.InfoWindow();
 		google.maps.event.addListener(marker_center, 'click', (function(marker_center) {
                         return function() {
@@ -116,9 +210,23 @@ $(document).ready(function(){
                         	        + 'Ближайший населённый пункт: ' + recreationCenter.nearest_settlement
                                 	+ '(' + recreationCenter.dist_to_settlement + 'km)'
                             	);
+				infowindow.open(map, marker_center);
 
 
-                                infowindow.open(map, marker_center);
+			//	if (line){
+			//		line.setMap(null);
+			//	}
+				//line = new google.maps.Polyline({
+   				//	path: [new google.maps.LatLng(recreationCenter.nearest_water_y, recreationCenter.nearest_water_x), 
+				//		new google.maps.LatLng(recreationCenter.lat, recreationCenter.lng)],
+				//	strokeColor: "#0000ff",
+				//	strokeOpacity: 1.0,
+				//	strokeWeight: 2,
+				//	map: map
+				//});
+				
+				
+
                         }
                 })(marker_center));
 		
@@ -141,6 +249,7 @@ function showAllCenters(){
 	for (var i=0; i<markers.length; i++){
 		markers[i].setMap(map);
 	}
+	removeLines();
 
 }
 
@@ -176,6 +285,8 @@ function showCentersByCriteria(){
 			markers[i].setMap(null);
 		}
 	}
+	
+	removeLines();
 }
 
 </script>
