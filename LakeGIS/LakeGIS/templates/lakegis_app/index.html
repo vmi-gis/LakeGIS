@@ -152,15 +152,15 @@ function initializeMaps() {
 	        	return function() {
         		    infowindow.setContent(RecreationCenters[i].name + '<br>' 
 				+ 'Ближайший водоём: ' + RecreationCenters[i].nearest_water 
-				+ '(' + RecreationCenters[i].dist_to_water + 'km)' + '<br>'
+				+ '(' + RecreationCenters[i].dist_to_water.toFixed(3) + 'km)' + '<br>'
 				+ 'Ближайший лес: ' + RecreationCenters[i].nearest_forest 
-				+ '(' + RecreationCenters[i].dist_to_forest + 'km)' + '<br>'
+				+ '(' + RecreationCenters[i].dist_to_forest.toFixed(3) + 'km)' + '<br>'
 				+ 'Ближайшая трасса: ' + RecreationCenters[i].nearest_highway 
-				+ '(' + RecreationCenters[i].dist_to_highway + 'km)' + '<br>'
+				+ '(' + RecreationCenters[i].dist_to_highway.toFixed(3) + 'km)' + '<br>'
 				+ 'Ближайшая ж/д станция: ' + RecreationCenters[i].nearest_railway 
-				+ '(' + RecreationCenters[i].dist_to_railway + 'km)' + '<br>'
+				+ '(' + RecreationCenters[i].dist_to_railway.toFixed(3) + 'km)' + '<br>'
 				+ 'Ближайший населённый пункт: ' + RecreationCenters[i].nearest_settlement
-				+ '(' + RecreationCenters[i].dist_to_settlement + 'km)' 
+				+ '(' + RecreationCenters[i].dist_to_settlement.toFixed(3) + 'km)'
 			    );
         		    infowindow.open(map, marker);
 
@@ -203,15 +203,15 @@ $(document).ready(function(){
                         return function() {
                             	infowindow.setContent(recreationCenter.name + '<br>'
 	                                + 'Ближайший водоём: ' + recreationCenter.nearest_water
-        	                        + '(' + recreationCenter.dist_to_water + 'km)' + '<br>'
+        	                        + '(' + recreationCenter.dist_to_water.toFixed(3) + 'km)' + '<br>'
                 	                + 'Ближайший лес: ' + recreationCenter.nearest_forest
-                        	        + '(' + recreationCenter.dist_to_forest + 'km)' + '<br>'
+                        	        + '(' + recreationCenter.dist_to_forest.toFixed(3) + 'km)' + '<br>'
                                 	+ 'Ближайшая трасса: ' + recreationCenter.nearest_highway
-	                                + '(' + recreationCenter.dist_to_highway + 'km)' + '<br>'
+	                                + '(' + recreationCenter.dist_to_highway.toFixed(3) + 'km)' + '<br>'
         	                        + 'Ближайшая ж/д станция: ' + recreationCenter.nearest_railway
-                	                + '(' + recreationCenter.dist_to_railway + 'km)' + '<br>'
+                	                + '(' + recreationCenter.dist_to_railway.toFixed(3) + 'km)' + '<br>'
                         	        + 'Ближайший населённый пункт: ' + recreationCenter.nearest_settlement
-                                	+ '(' + recreationCenter.dist_to_settlement + 'km)'
+                                	+ '(' + recreationCenter.dist_to_settlement.toFixed(3) + 'km)'
                             	);
 				infowindow.open(map, marker_center);		
 				

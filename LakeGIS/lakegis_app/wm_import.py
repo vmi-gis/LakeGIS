@@ -107,16 +107,28 @@ def _place_is_inside_geom(place, geom):
     return geom.contains(GEOSGeometry(_get_place_wkt(place)))
 
 
+#def _dist_to_water(rc):
+#    pnt = rc.geom
+#    wms_distance = []
+#    wms_geom = []
+#    for wm in models.WaterModel.objects.distance(pnt):
+#         wms_distance.append(wm.distance.km),
+#         wms_geom.append(wm.geom)
+#    rc.dist_to_water = min(wms_distance)
+#    w_index = wms_distance.index(min(wms_distance))
+#    rc.nearest_water = models.WaterModel.objects.get(geom__contains=wms_geom[w_index])
+
+
 def _dist_to_water(rc):
     pnt = rc.geom
     wms_distance = []
     wms_geom = []
     for wm in models.WaterModel.objects.distance(pnt):
          wms_distance.append(wm.distance.km),
-         wms_geom.append(wm.geom)
+         wms_geom.append(wm)
     rc.dist_to_water = min(wms_distance)
-    w_index = wms_distance.index(min(wms_distance))
-    rc.nearest_water = models.WaterModel.objects.get(geom__contains=wms_geom[w_index])
+    w_index = wms_distance.index(rc.dist_to_water)
+    rc.nearest_water = wms_geom[w_index]
 
 
 def _dist_to_forest(rc):
@@ -125,10 +137,10 @@ def _dist_to_forest(rc):
     fs_geom = []
     for f in models.ForestModel.objects.distance(pnt):
          fs_distance.append(f.distance.km),
-         fs_geom.append(f.geom)
+         fs_geom.append(f)
     rc.dist_to_forest = min(fs_distance)
-    f_index = fs_distance.index(min(fs_distance))
-    rc.nearest_forest = models.ForestModel.objects.get(geom__contains=fs_geom[f_index])
+    f_index = fs_distance.index(rc.dist_to_forest)
+    rc.nearest_forest = fs_geom[f_index]
 
 
 def _dist_to_highway(rc):
@@ -137,10 +149,10 @@ def _dist_to_highway(rc):
     hws_geom = []
     for hw in models.HighwayModel.objects.distance(pnt):
          hws_distance.append(hw.distance.km),
-         hws_geom.append(hw.geom)
+         hws_geom.append(hw)
     rc.dist_to_highway = min(hws_distance)
-    hw_index = hws_distance.index(min(hws_distance))
-    rc.nearest_highway = models.HighwayModel.objects.get(geom__contains=hws_geom[hw_index])
+    hw_index = hws_distance.index(rc.dist_to_highway)
+    rc.nearest_highway = hws_geom[hw_index]
 
 
 def _dist_to_railway_station(rc):
@@ -149,10 +161,10 @@ def _dist_to_railway_station(rc):
     rws_geom = []
     for s in models.RailwayStationModel.objects.distance(pnt):
          rws_distance.append(s.distance.km),
-         rws_geom.append(s.geom)
+         rws_geom.append(s)
     rc.dist_to_railway_station = min(rws_distance)
-    r_index = rws_distance.index(min(rws_distance))
-    rc.nearest_railway_station = models.RailwayStationModel.objects.get(geom__contains=rws_geom[r_index])
+    r_index = rws_distance.index(rc.dist_to_railway_station)
+    rc.nearest_railway_station = rws_geom[r_index]
 
 
 def _dist_to_settlement(rc):
@@ -161,10 +173,10 @@ def _dist_to_settlement(rc):
     ss_geom = []
     for sm in models.SettlementModel.objects.distance(pnt):
          ss_distance.append(sm.distance.km),
-         ss_geom.append(sm.geom)
+         ss_geom.append(sm)
     rc.dist_to_settlement = min(ss_distance)
-    sm_index = ss_distance.index(min(ss_distance))
-    rc.nearest_settlement = models.SettlementModel.objects.get(geom__contains=ss_geom[sm_index])
+    sm_index = ss_distance.index(rc.dist_to_settlement)
+    rc.nearest_settlement = ss_geom[sm_index]
 
 
 def _process_response(server_response, region, region_border, allowed_tags, forbidden_tags):
