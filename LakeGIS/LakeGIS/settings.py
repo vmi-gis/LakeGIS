@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'rest_framework',
     'lakegis_app'
 )
 
@@ -90,7 +91,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # API-ключ для викимапии должен быть в local_settings.py
-WIKIMAPIA_API_KEY = 'E1AD607D-C56776F0-F8E63FE2-850BD578-671E1814-F5FE32F0-222C8709-ECAB7DC'
+WIKIMAPIA_API_KEY = ''
 
 WIKIMAPIA_SEARCH_SETTINGS = {
     'query_string' : 'база+отдыха+санаторий+ГЛЦ',
