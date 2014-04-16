@@ -1,0 +1,67 @@
+    body {
+	font-family: arial, sans-serif;
+	font-size: 12px;
+    }
+
+    #appName{
+	font-size: 36px;
+	font-family: impact;
+	font-style:smooth;
+	margin-left:20px;	
+	border-bottom: solid 1px darkblue;
+	width:1115px;
+    }
+
+    #map {
+        position: relative;
+        width: 700px;
+        height: 533px;
+        display:block;
+        float: left;
+        margin: 20px
+    }
+
+    #RecreationCenters {
+        position: absolute;
+	left: 750px;
+	top:103px;
+        float: left;
+        overflow:auto;
+        width: 395px;
+        height: 500px;
+	disblay: block;
+    }
+    .linkOFF {
+        color: darkblue
+    }
+    .linkON {
+        color: white;
+        background-color: darkblue
+    }
+
+    #ControlPanel{
+        position: absolute;
+        top: 600px;
+        margin: 20px;
+        float: left;
+	white-space:nowrap;
+	width: 1095px;
+
+	padding: 10px;
+	border-radius: 3px;
+	border: solid 1px darkblue;
+    }
+
+    .Criteria{
+        float: left;
+        display: block;
+        margin-right: 30px;
+	
+    }
+
+    .header{
+        font-size: 20px;
+        height: 30px;
+	display:block;
+}
+
