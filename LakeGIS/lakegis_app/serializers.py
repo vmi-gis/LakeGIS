@@ -20,7 +20,7 @@ class ForestSerializer(serializers.ModelSerializer):
 class SettlementSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.SettlementModel
-        fields = ['name', 'lat', 'lon']
+        fields = ['id', 'name', 'lat', 'lon']
     lat = serializers.FloatField(source = 'geom.centroid.y')
     lon = serializers.FloatField(source = 'geom.centroid.x')
 

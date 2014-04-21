@@ -1,5 +1,6 @@
-from lakegis_app.models import RecreationCenterModel
-from lakegis_app.serializers import RecreationCenterSerializer
+from django.contrib.gis.measure import D
+from lakegis_app.models import RecreationCenterModel, SettlementModel
+from lakegis_app.serializers import RecreationCenterSerializer, SettlementSerializer
 from rest_framework.generics import ListAPIView
 from rest_framework.renderers import UnicodeJSONRenderer
 from rest_framework.response import Response
@@ -11,6 +12,13 @@ class GetAllRecreationCenters(ListAPIView):
 
     def get_queryset(self):
         return RecreationCenterModel.objects.order_by('name')
+
+class GetAllSettlements(ListAPIView):
+    renderer_classes = [UnicodeJSONRenderer]
+    serializer_class = SettlementSerializer
+
+    def get_queryset(self):
+        return SettlementModel.objects.order_by('name')
 
 class FilterRecreationCenters(APIView):
     renderer_classes = [UnicodeJSONRenderer]
@@ -51,6 +59,12 @@ class FilterRecreationCenters(APIView):
             rcs = rcs.filter(dist_to_highway__gte = float(params['highway_min']))
         if 'highway_max' in params and self._valid_distance(params['highway_max']):
             rcs = rcs.filter(dist_to_highway__lte = float(params['highway_max']))
+
+        spec_settlement_geom = SettlementModel.objects.get(id = params['spec_settlement_id']).geom
+        if 'spec_settlement_min' in params and self._valid_distance(params['spec_settlement_min']):
+            rcs = rcs.filter(geom__distance_gte = (spec_settlement_geom, D(km=float(params['spec_settlement_min']))))
+        if 'spec_settlement_max' in params and self._valid_distance(params['spec_settlement_max']):
+            rcs = rcs.filter(geom__distance_lte = (spec_settlement_geom, D(km=float(params['spec_settlement_max']))))
 
         serializer = RecreationCenterSerializer(rcs, many = True)
         return Response(serializer.data)

@@ -11,6 +11,7 @@ src="http://code.jquery.com/jquery-1.4.4.min.js"></script>
 
 var map; 
 var markers = {}; 
+var settlements = {}
 
 var lineCollections = {}; function clearLines() {
     for(var id in lineCollections) {
@@ -24,6 +25,11 @@ var lineCollections = {}; function clearLines() {
     lineCollections = {};
 }
 
+function clearSettlements() {
+	var settlementsMenu = $('#settlement_select')[0];
+	settlementsMenu.options.length = 0;
+	settlements = {}
+}
 
 function clearMarkers() {
         clearLines();
@@ -169,6 +175,30 @@ function setupMarkers(recreationCenters) {
 	});
 }
 
+function onSettlementsReceive(settlementsList) {
+	clearSettlements();
+	var settlementsMenu = $("#settlement_select")[0];
+	for(var i = 0; i < settlementsList.length; ++i) {
+		var name = settlementsList[i].name;
+		var id = settlementsList[i].id;
+
+		var settlementOption = document.createElement("option");
+		settlementOption.text = name;
+		settlementsMenu.add(settlementOption);
+
+		settlements[name] = id;
+	}
+}
+
+function setupSettlementsMenu() {
+	$.ajax({
+		url: '/all_settlements/',
+		type: 'GET',
+		dataType: 'json',
+		cache: 'false',
+		success: onSettlementsReceive
+	});
+}
 
 function onDataReceive(recreationCenters) {
 	setupMarkers(recreationCenters);
@@ -201,6 +231,7 @@ function showAllCenters() {
 function pageInit() {
 	initializeMaps();
 	showAllCenters();
+	setupSettlementsMenu();
 }
 
 
@@ -246,6 +277,15 @@ function showCentersByCriteria(){
 	if(!isNaN(settlement_max)) {
 		data.settlement_max = settlement_max;
 	}
+	var spec_settlement_min = parseFloat($('#min_dist_to_spec_settlement').val());
+	if(!isNaN(spec_settlement_min)) {
+		data.spec_settlement_min = spec_settlement_min;
+	}
+	var spec_settlement_max = parseFloat($('#max_dist_to_spec_settlement').val());
+	if(!isNaN(spec_settlement_max)) {
+		data.spec_settlement_max = spec_settlement_max;
+	}
+	data.spec_settlement_id = settlements[$('#settlement_select').val()];
 	$.ajax({
 		url: '/filter_rcs/',
 		data: data,
@@ -305,8 +345,14 @@ function showCentersByCriteria(){
                         Максимальное: <br> <input name=max_dist_to_railway id="max_dist_to_railway" type="text" size="10"><br>
                 </div>
                 <div class="Criteria">
-                        <b>Расстояние до населённого пункта (км.)</b><br>
+                        <b>Расстояние до ближайшего населённого пункта (км.)</b><br>
                         Минимальное: <br> <input name=min_dist_to_settlement id="min_dist_to_settlement" type="text" size="10" float="right"><br>
                         Максимальное: <br> <input name=max_dist_to_settlement id="max_dist_to_settlement" type="text" size="10"><br>
-                </div>
+		</div>
+		<div class="Criteria">
+			<b>Расстояние до определенного населенного пункта (км.)</b><br>
+			Город: <br> <select name=settlement_select id="settlement_select"></select><br>
+                        Минимальное: <br> <input name=min_dist_to_spec_settlement id="min_dist_to_spec_settlement" type="text" size="10" float="right"><br>
+                        Максимальное: <br> <input name=max_dist_to_spec_settlement id="max_dist_to_spec_settlement" type="text" size="10"><br>
+		</div>
 	</div> </body> </html>
